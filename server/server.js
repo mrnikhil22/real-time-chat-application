@@ -3,11 +3,15 @@ const http = require("http");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 
 const Message = require("./models/Message");
 
 const app = express();
 app.use(cors());
+
+// ✅ Serve frontend files
+app.use(express.static(path.join(__dirname, "../client")));
 
 const server = http.createServer(app);
 
@@ -110,6 +114,11 @@ io.on("connection", (socket) => {
       io.to(user.room).emit("roomUsers", roomUsers);
     }
   });
+});
+
+// ✅ Home Route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
 // ✅ PORT for Local + Render Deployment

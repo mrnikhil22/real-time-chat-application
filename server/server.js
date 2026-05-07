@@ -8,6 +8,7 @@ const path = require("path");
 const Message = require("./models/Message");
 
 const app = express();
+
 app.use(cors());
 
 // ✅ Serve frontend files
@@ -15,18 +16,21 @@ app.use(express.static(path.join(__dirname, "../client")));
 
 const server = http.createServer(app);
 
+// ✅ Socket.IO Setup
 const io = new Server(server, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST"]
   },
+  transports: ["websocket", "polling"]
 });
 
-// ✅ MongoDB Connection (for Render Deployment)
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
-// Store users
+// ✅ Store users
 let users = {};
 
 io.on("connection", (socket) => {
@@ -34,58 +38,72 @@ io.on("connection", (socket) => {
 
   // ✅ JOIN ROOM
   socket.on("joinRoom", ({ username, room }) => {
+
+    if (!username || !room) return;
+
     socket.join(room);
+
     users[socket.id] = { username, room };
 
-    console.log("JOIN:", username, room);
+    console.log(`JOIN: ${username} joined ${room}`);
 
-    // ✅ Send users list
+    // ✅ Room users
     const roomUsers = Object.values(users)
-      .filter(u => u.room === room)
-      .map(u => u.username);
+      .filter(user => user.room === room)
+      .map(user => user.username);
 
     io.to(room).emit("roomUsers", roomUsers);
 
-    // ✅ Notify everyone
+    // ✅ Join message
     io.to(room).emit("message", {
       user: "System",
-      text: `${username} joined the chat`,
+      text: `${username} joined the chat`
     });
   });
 
   // ✅ SEND MESSAGE
   socket.on("sendMessage", async (msg) => {
+
     const user = users[socket.id];
 
-    if (user) {
+    if (!user || !msg) return;
+
+    try {
+      // ✅ Save to MongoDB
       await Message.create({
         username: user.username,
         message: msg,
-        room: user.room,
+        room: user.room
       });
 
+      // ✅ Send message to room
       io.to(user.room).emit("message", {
         user: user.username,
-        text: msg,
+        text: msg
       });
+
+    } catch (error) {
+      console.log("Message Error:", error);
     }
   });
 
   // ✅ LEAVE ROOM
   socket.on("leaveRoom", () => {
+
     const user = users[socket.id];
 
     if (user) {
+
       socket.leave(user.room);
 
       io.to(user.room).emit("message", {
         user: "System",
-        text: `${user.username} left`,
+        text: `${user.username} left the chat`
       });
 
       delete users[socket.id];
 
-      // ✅ Update users list
+      // ✅ Update users
       const roomUsers = Object.values(users)
         .filter(u => u.room === user.room)
         .map(u => u.username);
@@ -96,23 +114,27 @@ io.on("connection", (socket) => {
 
   // ✅ DISCONNECT
   socket.on("disconnect", () => {
+
     const user = users[socket.id];
 
     if (user) {
+
       io.to(user.room).emit("message", {
         user: "System",
-        text: `${user.username} disconnected`,
+        text: `${user.username} disconnected`
       });
 
       delete users[socket.id];
 
-      // ✅ Update users list
+      // ✅ Update users
       const roomUsers = Object.values(users)
         .filter(u => u.room === user.room)
         .map(u => u.username);
 
       io.to(user.room).emit("roomUsers", roomUsers);
     }
+
+    console.log("User disconnected:", socket.id);
   });
 });
 
@@ -121,7 +143,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
-// ✅ PORT for Local + Render Deployment
+// ✅ Server Port
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {

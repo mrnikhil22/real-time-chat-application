@@ -17,11 +17,12 @@ const io = new Server(server, {
   },
 });
 
-// MongoDB
-mongoose.connect("mongodb+srv://Nikhil:Nikhil123@cluster0.dnuiud5.mongodb.net/chatappdb")
+// ✅ MongoDB Connection (for Render Deployment)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
+// Store users
 let users = {};
 
 io.on("connection", (socket) => {
@@ -34,14 +35,14 @@ io.on("connection", (socket) => {
 
     console.log("JOIN:", username, room);
 
-    // Send users list
+    // ✅ Send users list
     const roomUsers = Object.values(users)
       .filter(u => u.room === room)
       .map(u => u.username);
 
     io.to(room).emit("roomUsers", roomUsers);
 
-    // Notify everyone
+    // ✅ Notify everyone
     io.to(room).emit("message", {
       user: "System",
       text: `${username} joined the chat`,
@@ -66,7 +67,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ✅ NEW: LEAVE ROOM (IMPORTANT FIX)
+  // ✅ LEAVE ROOM
   socket.on("leaveRoom", () => {
     const user = users[socket.id];
 
@@ -80,6 +81,7 @@ io.on("connection", (socket) => {
 
       delete users[socket.id];
 
+      // ✅ Update users list
       const roomUsers = Object.values(users)
         .filter(u => u.room === user.room)
         .map(u => u.username);
@@ -88,18 +90,19 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ✅ DISCONNECT (browser close)
+  // ✅ DISCONNECT
   socket.on("disconnect", () => {
     const user = users[socket.id];
 
     if (user) {
       io.to(user.room).emit("message", {
         user: "System",
-        text: `${user.username} left`,
+        text: `${user.username} disconnected`,
       });
 
       delete users[socket.id];
 
+      // ✅ Update users list
       const roomUsers = Object.values(users)
         .filter(u => u.room === user.room)
         .map(u => u.username);
@@ -107,9 +110,11 @@ io.on("connection", (socket) => {
       io.to(user.room).emit("roomUsers", roomUsers);
     }
   });
-
 });
 
-server.listen(5000, () => {
-  console.log("Server running on port 5000");
+// ✅ PORT for Local + Render Deployment
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

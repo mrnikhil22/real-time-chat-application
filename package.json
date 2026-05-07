@@ -1,0 +1,28 @@
+{
+  "name": "chat-app",
+  "version": "1.0.0",
+  "description": "This is a real-time chat application developed using Node.js and Socket.IO. It allows multiple users to join chat rooms and communicate instantly. The application uses MongoDB for storing messages and supports live user updates.",
+  "main": "index.js",
+  
+  "scripts": {
+  "start": "node server.js"
+  
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrnikhil22/real-time-chat-application.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrnikhil22/real-time-chat-application/issues"
+  },
+  "homepage": "https://github.com/mrnikhil22/real-time-chat-application#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.1",
+    "socket.io": "^4.8.3"
+  }
+}

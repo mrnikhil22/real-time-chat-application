@@ -1,0 +1,101 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #ece5dd;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main Container */
+.chat-container {
+  width: 400px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Chat Box */
+#chat-box {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #dcf8c6;
+  border-radius: 5px;
+}
+
+/* Messages */
+#chat-box div {
+  margin: 5px 0;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: white;
+}
+
+/* Input Fields */
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+/* Base Button */
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* Join Button */
+.join-btn {
+  background: #007bff;
+  color: white;
+}
+
+/* Send Button */
+.send-btn {
+  background: #25d366;
+  color: white;
+}
+
+/* Leave Button */
+.leave-btn {
+  background: #ff4d4d;
+  color: white;
+}
+
+/* Hover Effects */
+.join-btn:hover {
+  background: #0069d9;
+}
+
+.send-btn:hover {
+  background: #1ebe5d;
+}
+
+.leave-btn:hover {
+  background: #e60000;
+}
+
+/* Online Users */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;
+}
+
+li {
+  background: #f1f1f1;
+  margin: 3px 0;
+  padding: 6px;
+  border-radius: 5px;
+  font-size: 14px;
+}

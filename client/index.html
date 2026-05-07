@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="chat-container">
+  <h2>💬 Real-Time Chat</h2>
+
+  <!-- Join Section -->
+  <input id="username" placeholder="Enter username" />
+  <input id="room" placeholder="Enter room (e.g. room1)" />
+  <button class="join-btn" onclick="joinRoom()">Join Chat</button>
+
+  <!-- Online Users -->
+  <h3>🟢 Online Users</h3>
+  <ul id="users"></ul>
+
+  <!-- Chat Box -->
+  <div id="chat-box"></div>
+
+  <!-- Message Input -->
+  <input id="message" placeholder="Type message..." />
+  <button class="send-btn" onclick="sendMessage()">Send Message</button>
+
+  <!-- Leave Button -->
+  <button class="leave-btn" onclick="leaveRoom()">Leave Chat</button>
+</div>
+
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
